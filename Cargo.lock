@@ -35,7 +35,7 @@ dependencies = [
 [[package]]
 name = "ipnetwork"
 version = "0.20.0"
-source = "git+https://github.com/Alextopher/ipnetwork.git?branch=ipv6#f926c45c92af38746bb59aa43fc67f372d1076f1"
+source = "git+https://github.com/achanda/ipnetwork?rev=068959e2c44fb4b6815666047d4162de86edbd4a#068959e2c44fb4b6815666047d4162de86edbd4a"
 dependencies = [
  "serde",
 ]
