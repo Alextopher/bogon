@@ -1,5 +1,7 @@
 # Bogon
 
+[![Rust](https://github.com/Alextopher/bogon/actions/workflows/rust.yaml/badge.svg)](https://github.com/Alextopher/bogon/actions/workflows/rust.yaml)
+
 Bogon is a Rust library for checking whether an IP address is considered "bogus" or "bogon", meaning it's not valid for use on the public internet. This includes private IP addresses, loopback addresses, and other reserved addresses.
 
 ## Features
