@@ -11,19 +11,24 @@
 //! use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 //! use bogon::is_bogon_str;
 //!
-//! assert_eq!(is_bogon_str("127.0.0.1"), Ok(true));
-//! assert_eq!(is_bogon_str("8.8.8.8"), Ok(false));
-//! assert_eq!(is_bogon_str("::1"), Ok(true));
-//! assert!(is_bogon_str("foo").is_err());
+//! assert_eq!(bogon::is_bogon_str("127.0.0.1"), Ok(true));
+//! assert_eq!(bogon::is_bogon_str("8.8.8.8"), Ok(false));
+//! assert_eq!(bogon::is_bogon_str("::1"), Ok(true));
+//! assert!(bogon::is_bogon_str("foo").is_err());
+//!
+//! assert_eq!(bogon::is_bogon_v4(Ipv4Addr::new(127, 0, 0, 1)), true);
+//! assert_eq!(bogon::is_bogon_v4(Ipv4Addr::new(8, 8, 8, 8)), false);
+//! assert_eq!(bogon::is_bogon_v6(Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1)), true);
 //!
 //! assert_eq!(bogon::is_bogon(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1))), true);
 //! assert_eq!(bogon::is_bogon(IpAddr::V4(Ipv4Addr::new(8, 8, 8, 8))), false);
 //! assert_eq!(bogon::is_bogon(IpAddr::V6(Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1))), true);
 //!
-//! assert_eq!(bogon::is_bogon_v4(Ipv4Addr::new(127, 0, 0, 1)), true);
-//! assert_eq!(bogon::is_bogon_v4(Ipv4Addr::new(8, 8, 8, 8)), false);
+//! use bogon::BogonExt;
 //!
-//! assert_eq!(bogon::is_bogon_v6(Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1)), true);
+//! assert_eq!(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)).is_bogon(), true);
+//! assert_eq!(IpAddr::V4(Ipv4Addr::new(8, 8, 8, 8)).is_bogon(), false);
+//! assert_eq!(IpAddr::V6(Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1)).is_bogon(), true);
 //! ```
 use ipnetwork::Ipv4Network;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
