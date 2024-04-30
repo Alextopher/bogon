@@ -8,7 +8,7 @@ Bogon is a Rust library for checking whether an IP address is considered "bogus"
 
 - Supports both IPv4 and IPv6 addresses.
 - Includes methods for checking bogus IP addresses using extension traits.
-- Efficiently handles a predefined list of known bogus IP address ranges.
+- Strives to be as fast as possible. The compiler generates SIMD instructions for both IPv4 and IPv6 address checks.
 - IPv6 ranges are generated at build time from the [IANA reserved address registry](https://www.iana.org/assignments/ipv6-unicast-address-assignments/ipv6-unicast-address-assignments.xhtml).
 
 ## Examples
