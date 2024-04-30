@@ -66,7 +66,7 @@ fn main() {
     // Write the allocations to the file as a static array.
     writeln!(
         file,
-        "pub(crate) static V6_ALLOCATIONS: [ipnetwork::Ipv4Network; {}] = unsafe {{ [",
+        "pub(crate) static V6_ALLOCATIONS: once_cell::sync::Lazy<[ipnetwork::Ipv4Network; {}]> = once_cell::sync::Lazy::new(|| [",
         networks.len()
     )
     .unwrap();
@@ -74,7 +74,7 @@ fn main() {
     for allocation in networks {
         writeln!(
             file,
-            "    Ipv4Network::new_unchecked(Ipv4Addr::new({}, {}, {}, {}), {}),",
+            "    Ipv4Network::new(Ipv4Addr::new({}, {}, {}, {}), {}).unwrap(),",
             allocation.network().octets()[0],
             allocation.network().octets()[1],
             allocation.network().octets()[2],
@@ -84,7 +84,7 @@ fn main() {
         .unwrap()
     }
 
-    writeln!(file, "]}};").unwrap();
+    writeln!(file, "]);").unwrap();
 
     // Tell Cargo to rerun the build script if the CSV file changes.
     println!("cargo:rerun-if-changed=ipv6-unicast-address-assignments.csv");

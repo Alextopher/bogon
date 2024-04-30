@@ -36,6 +36,7 @@ dependencies = [
  "criterion",
  "csv",
  "ipnetwork",
+ "once_cell",
  "rand",
  "serde",
 ]
@@ -234,7 +235,8 @@ checksum = "d231dfb89cfffdbc30e7fc41579ed6066ad03abda9e567ccafae602b97ec5024"
 [[package]]
 name = "ipnetwork"
 version = "0.20.0"
-source = "git+https://github.com/achanda/ipnetwork?rev=068959e2c44fb4b6815666047d4162de86edbd4a#068959e2c44fb4b6815666047d4162de86edbd4a"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf466541e9d546596ee94f9f69590f89473455f88372423e0008fc1a7daf100e"
 dependencies = [
  "serde",
 ]

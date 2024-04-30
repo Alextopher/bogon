@@ -25,7 +25,7 @@
 //!
 //! assert_eq!(bogon::is_bogon_v6(Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1)), true);
 //! ```
-use ipnetwork::{Ipv4Network, Ipv6Network};
+use ipnetwork::Ipv4Network;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
 pub use ext::BogonExt;
@@ -44,40 +44,41 @@ mod ipv6_unicast_address_allocations {
 // Bogus IPv4 networks.
 //
 // SAFETY: Ipv4Network::new_unchecked is safe here as long as the prefix length is less than or equal to 32
-static V4_BOGON_NETWORKS: [Ipv4Network; 15] = unsafe {
-    [
-        // "This Network"
-        Ipv4Network::new_unchecked(Ipv4Addr::new(0, 0, 0, 0), 8),
-        // Private-Use
-        Ipv4Network::new_unchecked(Ipv4Addr::new(10, 0, 0, 0), 8),
-        // Shared Address Space
-        Ipv4Network::new_unchecked(Ipv4Addr::new(100, 64, 0, 0), 10),
-        // Loopback
-        Ipv4Network::new_unchecked(Ipv4Addr::new(127, 0, 0, 0), 8),
-        // Link Local
-        Ipv4Network::new_unchecked(Ipv4Addr::new(169, 254, 0, 0), 16),
-        // Private-Use
-        Ipv4Network::new_unchecked(Ipv4Addr::new(172, 16, 0, 0), 12),
-        // IETF Protocol Assignments
-        Ipv4Network::new_unchecked(Ipv4Addr::new(192, 0, 0, 0), 24),
-        // Documentation (TEST-NET-1)
-        Ipv4Network::new_unchecked(Ipv4Addr::new(192, 0, 2, 0), 24),
-        // Private-Use
-        Ipv4Network::new_unchecked(Ipv4Addr::new(192, 168, 0, 0), 16),
-        // "Benchmarking"
-        Ipv4Network::new_unchecked(Ipv4Addr::new(198, 18, 0, 0), 15),
-        // TEST-NET-2
-        Ipv4Network::new_unchecked(Ipv4Addr::new(198, 51, 100, 0), 24),
-        // TEST-NET-3
-        Ipv4Network::new_unchecked(Ipv4Addr::new(203, 0, 113, 0), 24),
-        // Multicast
-        Ipv4Network::new_unchecked(Ipv4Addr::new(224, 0, 0, 0), 4),
-        // Reserved
-        Ipv4Network::new_unchecked(Ipv4Addr::new(240, 0, 0, 0), 4),
-        // Limited Broadcast
-        Ipv4Network::new_unchecked(Ipv4Addr::new(255, 255, 255, 255), 32),
-    ]
-};
+static V4_BOGON_NETWORKS: once_cell::sync::Lazy<[Ipv4Network; 15]> =
+    once_cell::sync::Lazy::new(|| {
+        [
+            // "This Network"
+            Ipv4Network::new(Ipv4Addr::new(0, 0, 0, 0), 8).unwrap(),
+            // Private-Use
+            Ipv4Network::new(Ipv4Addr::new(10, 0, 0, 0), 8).unwrap(),
+            // Shared Address Space
+            Ipv4Network::new(Ipv4Addr::new(100, 64, 0, 0), 10).unwrap(),
+            // Loopback
+            Ipv4Network::new(Ipv4Addr::new(127, 0, 0, 0), 8).unwrap(),
+            // Link Local
+            Ipv4Network::new(Ipv4Addr::new(169, 254, 0, 0), 16).unwrap(),
+            // Private-Use
+            Ipv4Network::new(Ipv4Addr::new(172, 16, 0, 0), 12).unwrap(),
+            // IETF Protocol Assignments
+            Ipv4Network::new(Ipv4Addr::new(192, 0, 0, 0), 24).unwrap(),
+            // Documentation (TEST-NET-1)
+            Ipv4Network::new(Ipv4Addr::new(192, 0, 2, 0), 24).unwrap(),
+            // Private-Use
+            Ipv4Network::new(Ipv4Addr::new(192, 168, 0, 0), 16).unwrap(),
+            // "Benchmarking"
+            Ipv4Network::new(Ipv4Addr::new(198, 18, 0, 0), 15).unwrap(),
+            // TEST-NET-2
+            Ipv4Network::new(Ipv4Addr::new(198, 51, 100, 0), 24).unwrap(),
+            // TEST-NET-3
+            Ipv4Network::new(Ipv4Addr::new(203, 0, 113, 0), 24).unwrap(),
+            // Multicast
+            Ipv4Network::new(Ipv4Addr::new(224, 0, 0, 0), 4).unwrap(),
+            // Reserved
+            Ipv4Network::new(Ipv4Addr::new(240, 0, 0, 0), 4).unwrap(),
+            // Limited Broadcast
+            Ipv4Network::new(Ipv4Addr::new(255, 255, 255, 255), 32).unwrap(),
+        ]
+    });
 
 /// Returns a boolean indicating whether an IP address is bogus.
 ///
@@ -163,12 +164,8 @@ pub fn is_bogon_v4(ip_address: Ipv4Addr) -> bool {
 /// ```
 #[inline]
 pub fn is_bogon_v6(ip_address: Ipv6Addr) -> bool {
-    // SAFETY: Ipv6Network::new_unchecked is safe here as long as the prefix length is less than or equal to 128
-    static THE_INTERNET: Ipv6Network =
-        unsafe { Ipv6Network::new_unchecked(Ipv6Addr::new(0x2000, 0, 0, 0, 0, 0, 0, 0), 2) };
-
-    // If the IP address is outside of the allocated internet space, then it is a bogon.
-    if !THE_INTERNET.contains(ip_address) {
+    // If the IP is outside 2000::/3, it is not a global unicast address.
+    if ip_address.segments()[0] & 0xe000 != 0x2000 {
         return true;
     }
 
