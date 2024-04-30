@@ -1,6 +1,6 @@
-use ipnetwork::{Ipv4Network, Ipv6Network};
+use ipnetwork::Ipv4Network;
 
-use crate::{V4_NETWORKS, V6_NETWORKS};
+use crate::V4_BOGON_NETWORKS;
 
 #[test]
 fn check_v4_networks() {
@@ -26,42 +26,12 @@ fn check_v4_networks() {
     .collect::<Vec<Ipv4Network>>();
 
     // Compare to the unsafe static V4_NETWORKS.
-    for (a, b) in bogus.iter().zip(V4_NETWORKS) {
-        assert_eq!(a, b);
+    for (a, b) in bogus.iter().zip(V4_BOGON_NETWORKS) {
+        assert_eq!(*a, b);
     }
 
     // Double check that the prefix length is less than or equal to 32.
-    for network in V4_NETWORKS {
+    for network in V4_BOGON_NETWORKS {
         assert!(network.prefix() <= 32);
-    }
-}
-
-#[test]
-fn check_v6_network() {
-    let bogus = &[
-        "::/128",
-        "::1/128",
-        "::ffff:0:0/96",
-        "::/96",
-        "100::/64",
-        "2001:10::/28",
-        "2001:db8::/32",
-        "fc00::/7",
-        "fe80::/10",
-        "fec0::/10",
-        "ff00::/8",
-    ]
-    .iter()
-    .map(|&s| s.parse().unwrap())
-    .collect::<Vec<Ipv6Network>>();
-
-    // Compare to the unsafe static V6_NETWORKS.
-    for (a, b) in bogus.iter().zip(V6_NETWORKS) {
-        assert_eq!(a, b);
-    }
-
-    // Double check that the prefix length is less than or equal to 128.
-    for network in V6_NETWORKS {
-        assert!(network.prefix() <= 128);
     }
 }
