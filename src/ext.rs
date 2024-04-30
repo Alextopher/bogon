@@ -23,18 +23,21 @@ pub trait BogonExt: sealed::Sealed {
 }
 
 impl BogonExt for std::net::IpAddr {
+    #[inline]
     fn is_bogon(&self) -> bool {
         crate::is_bogon(*self)
     }
 }
 
 impl BogonExt for std::net::Ipv4Addr {
+    #[inline]
     fn is_bogon(&self) -> bool {
         crate::is_bogon_v4(*self)
     }
 }
 
 impl BogonExt for std::net::Ipv6Addr {
+    #[inline]
     fn is_bogon(&self) -> bool {
         crate::is_bogon_v6(*self)
     }

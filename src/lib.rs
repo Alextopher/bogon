@@ -95,6 +95,7 @@ static V4_BOGON_NETWORKS: [Ipv4Network; 15] = unsafe {
 /// assert_eq!(is_bogon(IpAddr::V6(Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1))), true);
 /// assert_eq!(is_bogon(IpAddr::V6(Ipv6Addr::new(0x2606, 0x4700, 0x4700, 0x1111, 0, 0, 0, 2))), false);
 /// ```
+#[inline]
 pub fn is_bogon(ip_address: IpAddr) -> bool {
     match ip_address {
         IpAddr::V4(ip) => is_bogon_v4(ip),
@@ -120,6 +121,7 @@ pub fn is_bogon(ip_address: IpAddr) -> bool {
 ///
 /// assert!(is_bogon_str("foo").is_err());
 /// ```
+#[inline]
 pub fn is_bogon_str(ip_address: impl AsRef<str>) -> Result<bool, std::net::AddrParseError> {
     ip_address.as_ref().parse().map(is_bogon)
 }
@@ -138,6 +140,7 @@ pub fn is_bogon_str(ip_address: impl AsRef<str>) -> Result<bool, std::net::AddrP
 /// assert_eq!(is_bogon_v4(Ipv4Addr::new(127, 0, 0, 1)), true);
 /// assert_eq!(is_bogon_v4(Ipv4Addr::new(8, 8, 8, 8)), false);
 /// ```
+#[inline]
 pub fn is_bogon_v4(ip_address: Ipv4Addr) -> bool {
     V4_BOGON_NETWORKS
         .iter()
@@ -158,6 +161,7 @@ pub fn is_bogon_v4(ip_address: Ipv4Addr) -> bool {
 /// assert_eq!(is_bogon_v6(Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1)), true);
 /// assert_eq!(is_bogon_v6(Ipv6Addr::new(0x2606, 0x4700, 0x4700, 0x1111, 0, 0, 0, 2)), false);
 /// ```
+#[inline]
 pub fn is_bogon_v6(ip_address: Ipv6Addr) -> bool {
     // SAFETY: Ipv6Network::new_unchecked is safe here as long as the prefix length is less than or equal to 128
     static THE_INTERNET: Ipv6Network =
