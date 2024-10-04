@@ -29,7 +29,6 @@ Rust 1.80 is the minimum supported rust version due to the use of `to_bits
 
 ```rust
 use core::net::{IpAddr, Ipv4Addr, Ipv6Addr};
-use bogon::is_bogon_str;
 
 assert_eq!(bogon::is_bogon_str("127.0.0.1"), Ok(true));
 assert_eq!(bogon::is_bogon_str("8.8.8.8"), Ok(false));

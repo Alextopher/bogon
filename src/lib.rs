@@ -6,11 +6,14 @@
 //! public internet. This includes private IP addresses, loopback addresses, and
 //! other reserved addresses.
 //!
+//! # Cargo Features
+//!
+//! - `download`: Download the latest IPv6 address allocations from the IANA website during the build process. Requires a network connection.
+//!
 //! # Example
 //!
 //! ```
 //! use core::net::{IpAddr, Ipv4Addr, Ipv6Addr};
-//! use bogon::is_bogon_str;
 //!
 //! assert_eq!(bogon::is_bogon_str("127.0.0.1"), Ok(true));
 //! assert_eq!(bogon::is_bogon_str("8.8.8.8"), Ok(false));
