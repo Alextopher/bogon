@@ -1,0 +1,1 @@
+wget -O ipv6-unicast-address-assignments.csv https://www.iana.org/assignments/ipv6-unicast-address-assignments/ipv6-unicast-address-assignments.csv

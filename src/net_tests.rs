@@ -1,6 +1,6 @@
 use ipnetwork::Ipv4Network;
 
-use crate::V4_BOGON_NETWORKS;
+use crate::{network::FourByteNetwork, V4_BOGON_NETWORKS};
 
 #[test]
 fn check_v4_networks() {
@@ -23,15 +23,16 @@ fn check_v4_networks() {
     ]
     .iter()
     .map(|&s| s.parse().unwrap())
-    .collect::<Vec<Ipv4Network>>();
+    .map(|n: Ipv4Network| FourByteNetwork::new(n.network().to_bits(), n.prefix()))
+    .collect::<Vec<_>>();
 
     // Compare to the unsafe static V4_NETWORKS.
-    for (a, b) in bogus.iter().zip(*V4_BOGON_NETWORKS) {
-        assert_eq!(*a, b);
+    for (a, b) in bogus.iter().zip(V4_BOGON_NETWORKS) {
+        assert_eq!(a, &b);
     }
 
     // Double check that the prefix length is less than or equal to 32.
-    for network in *V4_BOGON_NETWORKS {
+    for network in V4_BOGON_NETWORKS {
         assert!(network.prefix() <= 32);
     }
 }

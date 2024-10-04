@@ -1,14 +1,15 @@
+#![cfg_attr(not(test), no_std)]
+
 //! Functions for checking whether an IP address is bogus.
 //!
 //! Here "bogus" or "bogon" means an IP address that is not valid for use on the
 //! public internet. This includes private IP addresses, loopback addresses, and
-//! other reserved addresses. The primary goal of this crate is to provide
-//! efficient filters for use in geo-ip tools.
+//! other reserved addresses.
 //!
 //! # Example
 //!
 //! ```
-//! use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
+//! use core::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 //! use bogon::is_bogon_str;
 //!
 //! assert_eq!(bogon::is_bogon_str("127.0.0.1"), Ok(true));
@@ -30,14 +31,15 @@
 //! assert_eq!(IpAddr::V4(Ipv4Addr::new(8, 8, 8, 8)).is_bogon(), false);
 //! assert_eq!(IpAddr::V6(Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1)).is_bogon(), true);
 //! ```
-use ipnetwork::Ipv4Network;
-use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
+use core::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
 pub use ext::BogonExt;
+use network::FourByteNetwork;
 
 mod ext;
 #[cfg(test)]
 mod net_tests;
+mod network;
 
 mod ipv6_unicast_address_allocations {
     include!(concat!(
@@ -48,42 +50,39 @@ mod ipv6_unicast_address_allocations {
 
 // Bogus IPv4 networks.
 //
-// SAFETY: Ipv4Network::new_unchecked is safe here as long as the prefix length is less than or equal to 32
-static V4_BOGON_NETWORKS: once_cell::sync::Lazy<[Ipv4Network; 15]> =
-    once_cell::sync::Lazy::new(|| {
-        [
-            // "This Network"
-            Ipv4Network::new(Ipv4Addr::new(0, 0, 0, 0), 8).unwrap(),
-            // Private-Use
-            Ipv4Network::new(Ipv4Addr::new(10, 0, 0, 0), 8).unwrap(),
-            // Shared Address Space
-            Ipv4Network::new(Ipv4Addr::new(100, 64, 0, 0), 10).unwrap(),
-            // Loopback
-            Ipv4Network::new(Ipv4Addr::new(127, 0, 0, 0), 8).unwrap(),
-            // Link Local
-            Ipv4Network::new(Ipv4Addr::new(169, 254, 0, 0), 16).unwrap(),
-            // Private-Use
-            Ipv4Network::new(Ipv4Addr::new(172, 16, 0, 0), 12).unwrap(),
-            // IETF Protocol Assignments
-            Ipv4Network::new(Ipv4Addr::new(192, 0, 0, 0), 24).unwrap(),
-            // Documentation (TEST-NET-1)
-            Ipv4Network::new(Ipv4Addr::new(192, 0, 2, 0), 24).unwrap(),
-            // Private-Use
-            Ipv4Network::new(Ipv4Addr::new(192, 168, 0, 0), 16).unwrap(),
-            // "Benchmarking"
-            Ipv4Network::new(Ipv4Addr::new(198, 18, 0, 0), 15).unwrap(),
-            // TEST-NET-2
-            Ipv4Network::new(Ipv4Addr::new(198, 51, 100, 0), 24).unwrap(),
-            // TEST-NET-3
-            Ipv4Network::new(Ipv4Addr::new(203, 0, 113, 0), 24).unwrap(),
-            // Multicast
-            Ipv4Network::new(Ipv4Addr::new(224, 0, 0, 0), 4).unwrap(),
-            // Reserved
-            Ipv4Network::new(Ipv4Addr::new(240, 0, 0, 0), 4).unwrap(),
-            // Limited Broadcast
-            Ipv4Network::new(Ipv4Addr::new(255, 255, 255, 255), 32).unwrap(),
-        ]
-    });
+// SAFETY: FourByteNetwork::new_unchecked is safe here as long as the prefix length is less than or equal to 32
+static V4_BOGON_NETWORKS: [FourByteNetwork; 15] = [
+    // "This Network"
+    FourByteNetwork::new(Ipv4Addr::new(0, 0, 0, 0).to_bits(), 8),
+    // Private-Use
+    FourByteNetwork::new(Ipv4Addr::new(10, 0, 0, 0).to_bits(), 8),
+    // Shared Address Space
+    FourByteNetwork::new(Ipv4Addr::new(100, 64, 0, 0).to_bits(), 10),
+    // Loopback
+    FourByteNetwork::new(Ipv4Addr::new(127, 0, 0, 0).to_bits(), 8),
+    // Link Local
+    FourByteNetwork::new(Ipv4Addr::new(169, 254, 0, 0).to_bits(), 16),
+    // Private-Use
+    FourByteNetwork::new(Ipv4Addr::new(172, 16, 0, 0).to_bits(), 12),
+    // IETF Protocol Assignments
+    FourByteNetwork::new(Ipv4Addr::new(192, 0, 0, 0).to_bits(), 24),
+    // Documentation (TEST-NET-1)
+    FourByteNetwork::new(Ipv4Addr::new(192, 0, 2, 0).to_bits(), 24),
+    // Private-Use
+    FourByteNetwork::new(Ipv4Addr::new(192, 168, 0, 0).to_bits(), 16),
+    // "Benchmarking"
+    FourByteNetwork::new(Ipv4Addr::new(198, 18, 0, 0).to_bits(), 15),
+    // TEST-NET-2
+    FourByteNetwork::new(Ipv4Addr::new(198, 51, 100, 0).to_bits(), 24),
+    // TEST-NET-3
+    FourByteNetwork::new(Ipv4Addr::new(203, 0, 113, 0).to_bits(), 24),
+    // Multicast
+    FourByteNetwork::new(Ipv4Addr::new(224, 0, 0, 0).to_bits(), 4),
+    // Reserved
+    FourByteNetwork::new(Ipv4Addr::new(240, 0, 0, 0).to_bits(), 4),
+    // Limited Broadcast
+    FourByteNetwork::new(Ipv4Addr::new(255, 255, 255, 255).to_bits(), 32),
+];
 
 /// Returns a boolean indicating whether an IP address is bogus.
 ///
@@ -93,7 +92,7 @@ static V4_BOGON_NETWORKS: once_cell::sync::Lazy<[Ipv4Network; 15]> =
 /// # Examples
 ///
 /// ```
-/// use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
+/// use core::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 /// use bogon::is_bogon;
 ///
 /// assert_eq!(is_bogon(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1))), true);
@@ -128,7 +127,7 @@ pub fn is_bogon(ip_address: IpAddr) -> bool {
 /// assert!(is_bogon_str("foo").is_err());
 /// ```
 #[inline]
-pub fn is_bogon_str(ip_address: impl AsRef<str>) -> Result<bool, std::net::AddrParseError> {
+pub fn is_bogon_str(ip_address: impl AsRef<str>) -> Result<bool, core::net::AddrParseError> {
     ip_address.as_ref().parse().map(is_bogon)
 }
 
@@ -140,7 +139,7 @@ pub fn is_bogon_str(ip_address: impl AsRef<str>) -> Result<bool, std::net::AddrP
 /// # Examples
 ///
 /// ```
-/// use std::net::Ipv4Addr;
+/// use core::net::Ipv4Addr;
 /// use bogon::is_bogon_v4;
 ///
 /// assert_eq!(is_bogon_v4(Ipv4Addr::new(127, 0, 0, 1)), true);
@@ -150,7 +149,7 @@ pub fn is_bogon_str(ip_address: impl AsRef<str>) -> Result<bool, std::net::AddrP
 pub fn is_bogon_v4(ip_address: Ipv4Addr) -> bool {
     V4_BOGON_NETWORKS
         .iter()
-        .any(|&network| network.contains(ip_address))
+        .any(|network| network.contains_v4(ip_address))
 }
 
 /// Returns a boolean indicating whether an IPv6 address is bogus.
@@ -161,7 +160,7 @@ pub fn is_bogon_v4(ip_address: Ipv4Addr) -> bool {
 /// # Examples
 ///
 /// ```
-/// use std::net::Ipv6Addr;
+/// use core::net::Ipv6Addr;
 /// use bogon::is_bogon_v6;
 ///
 /// assert_eq!(is_bogon_v6(Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1)), true);
@@ -175,9 +174,7 @@ pub fn is_bogon_v6(ip_address: Ipv6Addr) -> bool {
     }
 
     // Bring the IP address into the IPv4 space for comparison.
-    let v4 = Ipv4Addr::from((u128::from(ip_address) >> 96) as u32);
-
     !ipv6_unicast_address_allocations::V6_ALLOCATIONS
         .iter()
-        .any(|&network| network.contains(v4))
+        .any(|network| network.contains_v6(ip_address))
 }

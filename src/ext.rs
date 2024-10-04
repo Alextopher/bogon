@@ -10,7 +10,7 @@ pub trait BogonExt: sealed::Sealed {
     /// # Examples
     ///
     /// ```
-    /// use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
+    /// use core::net::{IpAddr, Ipv4Addr, Ipv6Addr};
     /// use bogon::BogonExt;
     ///
     /// assert_eq!(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)).is_bogon(), true);
@@ -22,21 +22,21 @@ pub trait BogonExt: sealed::Sealed {
     fn is_bogon(&self) -> bool;
 }
 
-impl BogonExt for std::net::IpAddr {
+impl BogonExt for core::net::IpAddr {
     #[inline]
     fn is_bogon(&self) -> bool {
         crate::is_bogon(*self)
     }
 }
 
-impl BogonExt for std::net::Ipv4Addr {
+impl BogonExt for core::net::Ipv4Addr {
     #[inline]
     fn is_bogon(&self) -> bool {
         crate::is_bogon_v4(*self)
     }
 }
 
-impl BogonExt for std::net::Ipv6Addr {
+impl BogonExt for core::net::Ipv6Addr {
     #[inline]
     fn is_bogon(&self) -> bool {
         crate::is_bogon_v6(*self)
@@ -44,7 +44,7 @@ impl BogonExt for std::net::Ipv6Addr {
 }
 
 mod sealed {
-    use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
+    use core::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
     pub trait Sealed {}
 

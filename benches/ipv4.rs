@@ -1,9 +1,8 @@
-use std::net::{Ipv4Addr, Ipv6Addr};
+use core::net::{Ipv4Addr, Ipv6Addr};
 
 use bogon::BogonExt;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
-// Test using 1_000 random IP addresses.
 fn generate_random_ipv4() -> Vec<Ipv4Addr> {
     (0..1_024)
         .map(|_| {

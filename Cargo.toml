@@ -1,6 +1,6 @@
 [package]
 name = "bogon"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT"
 description = "A Rust library to check if an IP address is a bogon"
@@ -8,20 +8,24 @@ repository = "https://github.com/Alextopher/bogon"
 readme = "README.md"
 keywords = ["bogon", "bogus", "ip", "ipv4", "ipv6"]
 categories = ["network-programming"]
-authors = ["Christopher Mahoney"]
+authors = ["Alextopher <christopher.mahoney2000@gmail.com>"]
 
 [dependencies]
-ipnetwork = "0.20.0"
-once_cell = "1.19.0"
 
 [build-dependencies]
 csv = "1.3.0"
 ipnetwork = "0.20.0"
-serde = { version = "1.0.199", features = ["derive"] }
+serde = { version = "1.0.210", features = ["derive"] }
+reqwest = { version = "0.12.8", features = ["blocking"], optional = true }
+rustc_version = { version = "0.4.1", optional = true }
 
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
+ipnetwork = "0.20.0"
 rand = "0.8.5"
+
+[features]
+download = ["dep:reqwest", "dep:rustc_version"]
 
 [[bench]]
 name = "ipv4"
