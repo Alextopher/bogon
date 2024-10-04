@@ -21,9 +21,7 @@ Bogon is a Rust library for checking whether an IP address is considered "bogus"
 
 ## MSRV
 
-Rust 1.80 is the minimum supported rust version due to the use of `to_bits
-
-. It's unlikely that the MSRV will be increased in the future.
+Rust 1.80 is the minimum supported rust version due to the use of `to_bits()`. It's unlikely that the MSRV will be increased in the future.
 
 ## Examples
 
