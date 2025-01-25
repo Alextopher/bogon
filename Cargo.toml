@@ -14,15 +14,15 @@ authors = ["Alextopher <christopher.mahoney2000@gmail.com>"]
 
 [build-dependencies]
 csv = "1.3.0"
-ipnetwork = "0.20.0"
+ipnetwork = { version = "0.21.1", features = ["serde"] }
 serde = { version = "1.0.210", features = ["derive"] }
 reqwest = { version = "0.12.8", features = ["blocking"], optional = true }
 rustc_version = { version = "0.4.1", optional = true }
 
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
-ipnetwork = "0.20.0"
-rand = "0.8.5"
+ipnetwork = { version = "0.21.1", features = ["serde"] }
+rand = "0.8"
 
 [features]
 download = ["dep:reqwest", "dep:rustc_version"]
